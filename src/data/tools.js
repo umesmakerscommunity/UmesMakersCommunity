@@ -1,0 +1,51 @@
+export const tools = [
+  {
+    name: "Arduino UNO",
+    category: "Microcontroladores",
+    availability: "Disponible",
+    quantity: 4,
+    recommendedUse: "Practicas introductorias, sensores y automatizacion sencilla.",
+  },
+  {
+    name: "ESP32",
+    category: "Microcontroladores",
+    availability: "En uso",
+    quantity: 2,
+    recommendedUse: "Proyectos IoT, WiFi, Bluetooth y lectura de datos.",
+  },
+  {
+    name: "Kit de sensores basicos",
+    category: "Sensores",
+    availability: "Disponible",
+    quantity: 3,
+    recommendedUse: "Pruebas de temperatura, luz, distancia y movimiento.",
+  },
+  {
+    name: "Multimetro digital",
+    category: "Medicion",
+    availability: "Disponible",
+    quantity: 2,
+    recommendedUse: "Verificacion de voltaje, continuidad y consumo aproximado.",
+  },
+  {
+    name: "Protoboards y jumpers",
+    category: "Electronica",
+    availability: "Disponible",
+    quantity: 8,
+    recommendedUse: "Armado rapido de circuitos sin soldadura.",
+  },
+  {
+    name: "Cautin y estaño",
+    category: "Herramientas generales",
+    availability: "No disponible",
+    quantity: 1,
+    recommendedUse: "Soldadura de componentes bajo supervision.",
+  },
+  {
+    name: "Filamento PLA",
+    category: "Prototipado",
+    availability: "En uso",
+    quantity: 2,
+    recommendedUse: "Piezas de prueba, soportes y carcasas sencillas.",
+  },
+];

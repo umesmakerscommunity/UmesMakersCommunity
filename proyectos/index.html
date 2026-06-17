@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Proyectos documentados de UMES Makers Community con estado, tecnologias, componentes y enlaces tecnicos."
+    />
+    <title>Proyectos | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegacion principal">
+        <a class="brand" href="/" aria-label="UMES Makers Community">
+          <img class="brand-logo" src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span class="brand-name">UMES Makers Community</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" data-nav-links>
+          <a href="/" data-nav-link>Inicio</a>
+          <a href="/sobre-nosotros/" data-nav-link>Sobre nosotros</a>
+          <a href="/proyectos/" data-nav-link>Proyectos</a>
+          <a href="/eventos/" data-nav-link>Eventos</a>
+          <a href="/makers/" data-nav-link>Makers</a>
+          <a href="/herramientas/" data-nav-link>Herramientas</a>
+          <a href="/recursos/" data-nav-link>Recursos</a>
+          <a href="/contacto/" data-nav-link>Contacto</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero section-shell">
+        <div class="container page-hero-grid">
+          <div class="reveal">
+            <span class="section-kicker">Proyectos</span>
+            <h1>Prototipos documentados para aprender, replicar y mejorar.</h1>
+            <p>
+              Cada tarjeta muestra estado, actualizacion, tecnologias, componentes y
+              enlaces preparados para documentacion, repositorio y archivos de diseno.
+            </p>
+          </div>
+          <div class="page-hero-card reveal">
+            <img src="/logo.png" alt="Logo de UMES Makers Community" />
+            <strong>La documentacion esta pensada para que otro estudiante pueda reproducir el proyecto.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-row reveal">
+            <div>
+              <span class="section-kicker">Proyectos destacados</span>
+              <h2>Ideas con avance visible.</h2>
+              <p class="section-description">
+                Ejemplos editables basados en proyectos academicos de la comunidad.
+              </p>
+            </div>
+          </div>
+          <div class="project-grid" data-featured-projects></div>
+        </div>
+      </section>
+
+      <section class="section soft-section">
+        <div class="container">
+          <div class="section-row reveal">
+            <div>
+              <span class="section-kicker">Proyectos en desarrollo</span>
+              <h2>Espacios abiertos para colaborar.</h2>
+              <p class="section-description">
+                Usa estos datos como base para actualizar estados reales, repositorios y
+                archivos de diseno cuando esten disponibles.
+              </p>
+            </div>
+          </div>
+          <div class="project-grid" data-development-projects></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container split-section">
+          <div class="section-heading reveal">
+            <span class="section-kicker">Estructura de detalle</span>
+            <h2>Cada proyecto tiene espacio para documentar el proceso completo.</h2>
+          </div>
+          <div class="text-panel reveal">
+            <p>
+              Las vistas de detalle incluyen objetivo, materiales, imagenes o diagramas,
+              codigo fuente, instrucciones de armado, resultados y posibles mejoras.
+            </p>
+            <p>
+              Esto deja preparada una biblioteca tecnica para cursos, talleres,
+              demostraciones y futuras generaciones de estudiantes.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <div>
+            <strong>UMES Makers Community</strong>
+            <p>Comunidad universitaria de tecnologia, innovacion y proyectos maker.</p>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Portal</h3>
+          <a href="/sobre-nosotros/">Sobre nosotros</a>
+          <a href="/proyectos/">Proyectos</a>
+          <a href="/eventos/">Eventos</a>
+          <a href="/makers/">Makers</a>
+        </div>
+        <div class="footer-column">
+          <h3>Recursos</h3>
+          <a href="/herramientas/">Herramientas</a>
+          <a href="/recursos/">Tutoriales</a>
+          <a href="/contacto/">Registro</a>
+          <a href="https://www.facebook.com/share/g/1BbUt9QjBB/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </div>
+        <div class="footer-column">
+          <h3>Contacto</h3>
+          <a href="mailto:umesmakerscommunity@gmail.com">umesmakerscommunity@gmail.com</a>
+          <span>Universidad Mariano Galvez</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 UMES Makers Community. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/script.js"></script>
+  </body>
+</html>

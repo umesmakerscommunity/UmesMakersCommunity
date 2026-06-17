@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Contacto y registro para nuevos miembros de UMES Makers Community."
+    />
+    <title>Contacto y registro | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegacion principal">
+        <a class="brand" href="/" aria-label="UMES Makers Community">
+          <img class="brand-logo" src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span class="brand-name">UMES Makers Community</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" data-nav-links>
+          <a href="/" data-nav-link>Inicio</a>
+          <a href="/sobre-nosotros/" data-nav-link>Sobre nosotros</a>
+          <a href="/proyectos/" data-nav-link>Proyectos</a>
+          <a href="/eventos/" data-nav-link>Eventos</a>
+          <a href="/makers/" data-nav-link>Makers</a>
+          <a href="/herramientas/" data-nav-link>Herramientas</a>
+          <a href="/recursos/" data-nav-link>Recursos</a>
+          <a href="/contacto/" data-nav-link>Contacto</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero section-shell">
+        <div class="container page-hero-grid">
+          <div class="reveal">
+            <span class="section-kicker">Contacto y registro</span>
+            <h1>Quiero unirme a UMES Makers.</h1>
+            <p>
+              Escribe a la comunidad, registra tu interes y cuentanos en que area te
+              gustaria aprender o colaborar.
+            </p>
+          </div>
+          <div class="page-hero-card reveal">
+            <img src="/logo.png" alt="Logo de UMES Makers Community" />
+            <strong>Correo oficial: umesmakerscommunity@gmail.com</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container contact-layout">
+          <div class="contact-panel reveal">
+            <span class="section-kicker">Canales rapidos</span>
+            <h2>Hablemos.</h2>
+            <p>
+              El formulario es frontend-only por ahora y queda preparado para conectarse
+              a un backend o servicio de formularios.
+            </p>
+            <div class="channel-list">
+              <a class="channel-card" href="mailto:umesmakerscommunity@gmail.com">
+                <span>Correo</span>
+                <strong>umesmakerscommunity@gmail.com</strong>
+              </a>
+              <a
+                class="channel-card"
+                href="https://wa.me/?text=Hola%20UMES%20Makers%2C%20quiero%20unirme%20a%20la%20comunidad."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>WhatsApp</span>
+                <strong>Mensaje rapido preparado</strong>
+              </a>
+              <a
+                class="channel-card"
+                href="https://t.me/share/url?url=https%3A%2F%2Fumesmakerscommunity.com&text=Hola%20UMES%20Makers%2C%20quiero%20unirme%20a%20la%20comunidad."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Telegram</span>
+                <strong>Compartir mensaje de contacto</strong>
+              </a>
+            </div>
+          </div>
+
+          <form class="register-form reveal" data-register-form>
+            <div>
+              <span class="section-kicker">Registro</span>
+              <h2>Formulario para nuevos miembros.</h2>
+            </div>
+
+            <label>
+              Nombre
+              <input type="text" name="nombre" autocomplete="name" required />
+            </label>
+            <label>
+              Carrera
+              <input type="text" name="carrera" required />
+            </label>
+            <label>
+              Semestre
+              <input type="text" name="semestre" required />
+            </label>
+            <label>
+              Area de interes
+              <select name="area" required>
+                <option value="">Seleccionar area</option>
+                <option>Programacion</option>
+                <option>Electronica</option>
+                <option>Robotica</option>
+                <option>IoT</option>
+                <option>Diseno 3D</option>
+                <option>Innovacion</option>
+              </select>
+            </label>
+            <label>
+              Correo
+              <input type="email" name="correo" autocomplete="email" required />
+            </label>
+            <label>
+              Telefono opcional
+              <input type="tel" name="telefono" autocomplete="tel" />
+            </label>
+            <label class="form-full">
+              Comentario
+              <textarea name="comentario" rows="5"></textarea>
+            </label>
+            <button class="btn btn-primary form-full" type="submit">Quiero unirme a UMES Makers</button>
+            <p class="form-message form-full" data-form-message hidden></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <div>
+            <strong>UMES Makers Community</strong>
+            <p>Comunidad universitaria de tecnologia, innovacion y proyectos maker.</p>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Portal</h3>
+          <a href="/sobre-nosotros/">Sobre nosotros</a>
+          <a href="/proyectos/">Proyectos</a>
+          <a href="/eventos/">Eventos</a>
+          <a href="/makers/">Makers</a>
+        </div>
+        <div class="footer-column">
+          <h3>Recursos</h3>
+          <a href="/herramientas/">Herramientas</a>
+          <a href="/recursos/">Tutoriales</a>
+          <a href="/contacto/">Registro</a>
+          <a href="https://www.facebook.com/share/g/1BbUt9QjBB/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </div>
+        <div class="footer-column">
+          <h3>Contacto</h3>
+          <a href="mailto:umesmakerscommunity@gmail.com">umesmakerscommunity@gmail.com</a>
+          <span>Universidad Mariano Galvez</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 UMES Makers Community. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/script.js"></script>
+  </body>
+</html>

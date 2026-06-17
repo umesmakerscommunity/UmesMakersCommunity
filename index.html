@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="UMES Makers Community: comunidad universitaria de tecnolog&iacute;a, innovaci&oacute;n y proyectos maker."
+      content="UMES Makers Community: portal universitario de tecnologia, innovacion, proyectos maker, eventos y recursos."
     />
     <title>UMES Makers Community</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,30 +14,31 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header class="site-header" id="inicio">
-      <nav class="navbar container" aria-label="Navegaci&oacute;n principal">
-        <a class="brand" href="#inicio" aria-label="UMES Makers Community">
-          <img class="brand-logo" src="logo.png" alt="Logo de UMES Makers Community" />
+    <header class="site-header">
+      <nav class="navbar container" aria-label="Navegacion principal">
+        <a class="brand" href="/" aria-label="UMES Makers Community">
+          <img class="brand-logo" src="/logo.png" alt="Logo de UMES Makers Community" />
           <span class="brand-name">UMES Makers Community</span>
         </a>
 
-        <button class="nav-toggle" type="button" aria-label="Abrir men&uacute;" aria-expanded="false">
+        <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
           <span></span>
           <span></span>
           <span></span>
         </button>
 
         <div class="nav-links" data-nav-links>
-          <a href="#inicio">Inicio</a>
-          <a href="#sobre-nosotros">Sobre nosotros</a>
-          <a href="#areas">&Aacute;reas</a>
-          <a href="#eventos">Eventos</a>
-          <a href="#proyectos">Proyectos</a>
-          <a href="#comunidad">Comunidad</a>
-          <a href="#contacto">Contacto</a>
+          <a href="/" data-nav-link>Inicio</a>
+          <a href="/sobre-nosotros/" data-nav-link>Sobre nosotros</a>
+          <a href="/proyectos/" data-nav-link>Proyectos</a>
+          <a href="/eventos/" data-nav-link>Eventos</a>
+          <a href="/makers/" data-nav-link>Makers</a>
+          <a href="/herramientas/" data-nav-link>Herramientas</a>
+          <a href="/recursos/" data-nav-link>Recursos</a>
+          <a href="/contacto/" data-nav-link>Contacto</a>
         </div>
       </nav>
     </header>
@@ -46,23 +47,24 @@
       <section class="hero section-shell">
         <div class="container hero-grid">
           <div class="hero-copy reveal">
-            <img class="hero-inline-logo" src="logo.png" alt="Logo de UMES Makers Community" />
+            <img class="hero-inline-logo" src="/logo.png" alt="Logo de UMES Makers Community" />
             <div class="eyebrow">
               <span class="pulse-dot"></span>
-              Tecnolog&iacute;a &middot; Innovaci&oacute;n &middot; Proyectos
+              Tecnologia &middot; Innovacion &middot; Proyectos
             </div>
             <h1>UMES Makers Community</h1>
             <p class="hero-subtitle">
-              Comunidad universitaria de tecnolog&iacute;a, innovaci&oacute;n y proyectos maker
+              Comunidad universitaria para aprender haciendo, documentar proyectos y
+              compartir tecnologia.
             </p>
             <p class="hero-text">
-              Una comunidad donde los estudiantes aprenden haciendo, comparten ideas y
-              desarrollan proyectos reales de programaci&oacute;n, electr&oacute;nica, rob&oacute;tica, IoT e
-              innovaci&oacute;n.
+              Un portal para estudiantes que quieren construir prototipos reales,
+              participar en talleres, encontrar recursos y conectar con otros makers de
+              la universidad.
             </p>
             <div class="hero-actions">
-              <a class="btn btn-primary" href="#eventos">Ver eventos</a>
-              <a class="btn btn-secondary" href="#contacto">Unirme a la comunidad</a>
+              <a class="btn btn-primary" href="/contacto/">Unirme a la comunidad</a>
+              <a class="btn btn-secondary" href="/proyectos/">Ver proyectos</a>
             </div>
           </div>
 
@@ -70,7 +72,7 @@
             <div class="hero-orbit hero-orbit-one"></div>
             <div class="hero-orbit hero-orbit-two"></div>
             <div class="logo-stage">
-              <img src="logo.png" alt="Logo de UMES Makers Community" />
+              <img src="/logo.png" alt="Logo de UMES Makers Community" />
             </div>
             <div class="floating-card floating-card-top">
               <span>IoT</span>
@@ -78,188 +80,146 @@
             </div>
             <div class="floating-card floating-card-bottom">
               <span>Maker Lab</span>
-              <strong>Ideas en acci&oacute;n</strong>
+              <strong>Ideas en accion</strong>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section" id="sobre-nosotros">
+      <section class="section">
         <div class="container split-section">
           <div class="section-heading reveal">
-            <span class="section-kicker">Sobre nosotros</span>
-            <h2>Un espacio para aprender, construir y compartir tecnolog&iacute;a.</h2>
+            <span class="section-kicker">Que es UMES Makers</span>
+            <h2>Una comunidad para convertir ideas universitarias en prototipos documentados.</h2>
           </div>
           <div class="text-panel reveal">
             <p>
-              UMES Makers Community es una comunidad universitaria creada para conectar a
-              estudiantes con curiosidad por la tecnolog&iacute;a, la innovaci&oacute;n y la cultura
-              maker. Reunimos personas que quieren experimentar, aprender con proyectos
-              reales y convertir ideas en soluciones &uacute;tiles.
+              UMES Makers Community conecta estudiantes interesados en programacion,
+              electronica, robotica, IoT, innovacion y proyectos colaborativos.
             </p>
             <p>
-              Nuestro enfoque combina programaci&oacute;n, electr&oacute;nica, prototipado, rob&oacute;tica,
-              IoT y colaboraci&oacute;n entre estudiantes para crear una experiencia pr&aacute;ctica,
-              profesional y cercana a los retos actuales.
+              El objetivo es aprender con talleres, mentorias, recursos compartidos y
+              documentacion clara para que otros estudiantes puedan reproducir y mejorar
+              cada proyecto.
             </p>
           </div>
         </div>
       </section>
 
-      <section class="purpose-band section" id="proposito">
-        <div class="container purpose-grid">
-          <div class="purpose-card reveal">
-            <span class="section-kicker">Nuestro prop&oacute;sito</span>
-            <h2>Impulsar estudiantes que crean, prueban y mejoran.</h2>
-            <p>
-              La comunidad busca fomentar el aprendizaje pr&aacute;ctico, la creatividad, la
-              colaboraci&oacute;n y el desarrollo de proyectos reales. Creemos en aprender
-              haciendo, iterar sin miedo y construir soluciones que conecten conocimiento
-              universitario con impacto real.
-            </p>
-          </div>
-          <div class="metrics-grid reveal">
-            <div class="metric">
-              <strong>01</strong>
-              <span>Aprendizaje pr&aacute;ctico</span>
-            </div>
-            <div class="metric">
-              <strong>02</strong>
-              <span>Creatividad t&eacute;cnica</span>
-            </div>
-            <div class="metric">
-              <strong>03</strong>
-              <span>Colaboraci&oacute;n activa</span>
-            </div>
-            <div class="metric">
-              <strong>04</strong>
-              <span>Proyectos reales</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="areas">
+      <section class="section soft-section">
         <div class="container">
           <div class="center-heading reveal">
-            <span class="section-kicker">&Aacute;reas de enfoque</span>
-            <h2>Disciplinas que se conectan para crear soluciones completas.</h2>
+            <span class="section-kicker">Accesos rapidos</span>
+            <h2>Entra directo a lo que necesitas.</h2>
           </div>
 
-          <div class="cards-grid areas-grid">
-            <article class="area-card reveal">
-              <div class="card-icon code-icon">&lt;/&gt;</div>
-              <h3>Programaci&oacute;n</h3>
-              <p>Desarrollo web, l&oacute;gica, automatizaci&oacute;n, aplicaciones y herramientas digitales.</p>
-            </article>
-            <article class="area-card reveal">
-              <div class="card-icon circuit-icon">V</div>
-              <h3>Electr&oacute;nica</h3>
-              <p>Circuitos, microcontroladores, sensores, actuadores y prototipos funcionales.</p>
-            </article>
-            <article class="area-card reveal">
-              <div class="card-icon bot-icon">R</div>
-              <h3>Rob&oacute;tica</h3>
-              <p>Construcci&oacute;n de sistemas aut&oacute;nomos, control, movimiento y pruebas en equipo.</p>
-            </article>
-            <article class="area-card reveal">
-              <div class="card-icon wifi-icon">IoT</div>
-              <h3>IoT</h3>
-              <p>Dispositivos conectados, monitoreo, datos en tiempo real e integraci&oacute;n cloud.</p>
-            </article>
-            <article class="area-card reveal">
-              <div class="card-icon idea-icon">!</div>
-              <h3>Innovaci&oacute;n</h3>
-              <p>Ideaci&oacute;n, validaci&oacute;n, prototipado r&aacute;pido y mejora continua de soluciones.</p>
-            </article>
-            <article class="area-card reveal">
-              <div class="card-icon team-icon">+</div>
-              <h3>Proyectos colaborativos</h3>
-              <p>Equipos multidisciplinarios que documentan, comparten y presentan avances.</p>
-            </article>
+          <div class="quick-grid">
+            <a class="quick-card reveal" href="/proyectos/">
+              <span>01</span>
+              <h3>Proyectos</h3>
+              <p>Consulta prototipos, componentes, documentacion y enlaces tecnicos.</p>
+            </a>
+            <a class="quick-card reveal" href="/eventos/">
+              <span>02</span>
+              <h3>Eventos</h3>
+              <p>Revisa talleres, meetups, agenda y recursos de actividades pasadas.</p>
+            </a>
+            <a class="quick-card reveal" href="/makers/">
+              <span>03</span>
+              <h3>Muro de Makers</h3>
+              <p>Conoce perfiles destacados, intereses y participaciones.</p>
+            </a>
+            <a class="quick-card reveal" href="/contacto/">
+              <span>04</span>
+              <h3>Contacto</h3>
+              <p>Registra tu interes y encuentra canales para escribir a la comunidad.</p>
+            </a>
           </div>
         </div>
       </section>
 
-      <section class="section soft-section" id="eventos">
+      <section class="section">
         <div class="container">
-          <div class="section-row events-heading reveal">
+          <div class="section-row reveal">
             <div>
-              <span class="section-kicker">Historial de actividades</span>
-              <h2>Eventos realizados</h2>
+              <span class="section-kicker">Proyectos en desarrollo</span>
+              <h2>Prototipos activos y listos para colaborar.</h2>
               <p class="section-description">
-                Actividades, talleres y encuentros que han formado parte del crecimiento de
-                UMES Makers Community.
+                Datos de ejemplo editables para que la comunidad actualice avances,
+                componentes y documentacion.
               </p>
             </div>
+            <a class="btn btn-secondary" href="/proyectos/">Ver todos</a>
           </div>
 
-          <div class="cards-grid events-grid" id="events-grid"></div>
+          <div class="project-grid" data-development-projects></div>
         </div>
       </section>
 
-      <section class="section" id="proyectos">
+      <section class="section soft-section">
         <div class="container">
-          <div class="center-heading reveal">
-            <span class="section-kicker">Proyectos destacados</span>
-            <h2>Ideas universitarias convertidas en prototipos reales.</h2>
+          <div class="section-row reveal">
+            <div>
+              <span class="section-kicker">Proximos eventos</span>
+              <h2>Agenda maker universitaria.</h2>
+              <p class="section-description">
+                Talleres, meetups y actividades para aprender, compartir avances y
+                encontrar equipo.
+              </p>
+            </div>
+            <a class="btn btn-secondary" href="/eventos/">Ver agenda</a>
           </div>
 
-          <div class="project-grid" id="projects-grid"></div>
+          <div class="cards-grid events-grid" data-upcoming-events data-limit="2"></div>
         </div>
       </section>
 
-      <section class="community-section section" id="comunidad">
+      <section class="community-section section">
         <div class="container community-grid">
           <div class="community-copy reveal">
             <span class="section-kicker">Comunidad</span>
-            <h2>El lado humano de construir tecnolog&iacute;a.</h2>
+            <h2>Un espacio util para aprender, construir y mostrar avances.</h2>
             <p>
-              UMES Makers es un punto de encuentro para estudiantes que quieren aprender
-              juntos, compartir recursos y crecer en comunidad. Los talleres, meetups,
-              eventos y espacios de networking ayudan a que cada participante encuentre
-              equipo, mentor&iacute;a e inspiraci&oacute;n para avanzar.
+              La comunidad organiza talleres, registra recursos y promueve proyectos
+              colaborativos para que cada estudiante pueda sumar desde su area de interes.
             </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="/makers/">Ver makers</a>
+              <a class="btn btn-secondary" href="/herramientas/">Herramientas</a>
+            </div>
           </div>
           <div class="community-list reveal">
             <div class="community-item">
               <span></span>
-              <p>Talleres pr&aacute;cticos con retos guiados y aprendizaje entre pares.</p>
+              <p>Talleres practicos con retos guiados y aprendizaje entre pares.</p>
             </div>
             <div class="community-item">
               <span></span>
-              <p>Aprendizaje colaborativo para compartir errores, avances y soluciones.</p>
+              <p>Mentorias para ordenar ideas, prototipos y documentacion.</p>
             </div>
             <div class="community-item">
               <span></span>
-              <p>Networking universitario para conectar ideas, talentos y oportunidades.</p>
+              <p>Recursos compartidos para estudiantes sin herramientas propias.</p>
             </div>
             <div class="community-item">
               <span></span>
-              <p>Participaci&oacute;n estudiantil en proyectos, eventos y demostraciones.</p>
+              <p>Proyectos listos para presentarse, mejorar o replicarse.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="cta-section section" id="contacto">
+      <section class="cta-section section">
         <div class="container">
           <div class="cta-panel reveal">
-            <img src="logo.png" alt="Logo de UMES Makers Community" />
+            <img src="/logo.png" alt="Logo de UMES Makers Community" />
             <div>
-              <h2>Forma parte de UMES Makers Community</h2>
-              <p>Convierte tus ideas en proyectos reales junto a otros estudiantes.</p>
+              <h2>Quiero unirme a UMES Makers</h2>
+              <p>Comparte tu area de interes y empieza a colaborar en talleres o proyectos.</p>
             </div>
             <div class="cta-actions">
-              <a class="btn btn-primary" href="mailto:umesmakerscommunity@gmail.com">Enviar correo</a>
-              <a
-                class="btn btn-secondary"
-                href="https://www.facebook.com/share/g/1BbUt9QjBB/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Visitar Facebook
-              </a>
+              <a class="btn btn-primary" href="/contacto/">Registrarme</a>
+              <a class="btn btn-secondary" href="mailto:umesmakerscommunity@gmail.com">Enviar correo</a>
             </div>
           </div>
         </div>
@@ -269,36 +229,33 @@
     <footer class="footer">
       <div class="container footer-grid">
         <div class="footer-brand">
-          <img src="logo.png" alt="Logo de UMES Makers Community" />
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
           <div>
             <strong>UMES Makers Community</strong>
-            <p>Comunidad universitaria de tecnolog&iacute;a, innovaci&oacute;n y proyectos maker.</p>
+            <p>Comunidad universitaria de tecnologia, innovacion y proyectos maker.</p>
           </div>
         </div>
 
         <div class="footer-column">
-          <h3>Enlaces r&aacute;pidos</h3>
-          <a href="#sobre-nosotros">Sobre nosotros</a>
-          <a href="#areas">&Aacute;reas</a>
-          <a href="#eventos">Eventos</a>
-          <a href="#proyectos">Proyectos</a>
+          <h3>Portal</h3>
+          <a href="/sobre-nosotros/">Sobre nosotros</a>
+          <a href="/proyectos/">Proyectos</a>
+          <a href="/eventos/">Eventos</a>
+          <a href="/makers/">Makers</a>
         </div>
 
         <div class="footer-column">
-          <h3>Redes sociales</h3>
-          <a
-            href="https://www.facebook.com/share/g/1BbUt9QjBB/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook de UMES Makers Community"
-          >
-            Facebook
-          </a>
+          <h3>Recursos</h3>
+          <a href="/herramientas/">Herramientas</a>
+          <a href="/recursos/">Tutoriales</a>
+          <a href="/contacto/">Registro</a>
+          <a href="https://www.facebook.com/share/g/1BbUt9QjBB/" target="_blank" rel="noopener noreferrer">Facebook</a>
         </div>
 
         <div class="footer-column">
           <h3>Contacto</h3>
           <a href="mailto:umesmakerscommunity@gmail.com">umesmakerscommunity@gmail.com</a>
+          <span>Universidad Mariano Galvez</span>
         </div>
       </div>
       <div class="footer-bottom">
@@ -306,6 +263,6 @@
       </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script type="module" src="/script.js"></script>
   </body>
 </html>
