@@ -196,6 +196,7 @@
 }
 
 .admin-form input,
+.admin-form select,
 .admin-form textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -212,6 +213,7 @@
 }
 
 .admin-form input:focus,
+.admin-form select:focus,
 .admin-form textarea:focus {
   border-color: rgba(18, 184, 232, 0.5);
   box-shadow: 0 0 0 4px rgba(18, 184, 232, 0.1);
@@ -259,6 +261,16 @@
   margin-top: 18px;
 }
 
+.admin-registrations-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-registrations-list {
+  display: grid;
+  gap: 18px;
+}
+
 .admin-event-item {
   display: grid;
   align-items: center;
@@ -287,6 +299,105 @@
   gap: 8px;
 }
 
+.admin-registration-item {
+  display: grid;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #f8fcff;
+  padding: 20px;
+}
+
+.admin-registration-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.admin-registration-header h3 {
+  margin: 12px 0 8px;
+  color: var(--navy);
+}
+
+.admin-registration-header p,
+.admin-registration-date {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.admin-registration-date {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  text-align: right;
+}
+
+.admin-registration-date span {
+  color: var(--orange);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-registration-details,
+.admin-registration-controls {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-registration-details {
+  margin: 0;
+}
+
+.admin-registration-details div,
+.admin-registration-controls label {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-registration-details dt,
+.admin-registration-controls label {
+  color: var(--navy);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.admin-registration-details dd {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.admin-registration-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-registration-controls select,
+.admin-registration-controls textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+  min-height: 46px;
+  padding: 11px 12px;
+}
+
+.admin-registration-controls textarea {
+  resize: vertical;
+}
+
+.admin-registration-controls select:focus,
+.admin-registration-controls textarea:focus {
+  border-color: rgba(18, 184, 232, 0.5);
+  box-shadow: 0 0 0 4px rgba(18, 184, 232, 0.1);
+  outline: none;
+}
+
 button:disabled {
   cursor: not-allowed;
   opacity: 0.62;
@@ -300,6 +411,20 @@ button:disabled {
 
   .admin-event-item {
     grid-template-columns: 1fr;
+  }
+
+  .admin-registration-details,
+  .admin-registration-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-registration-header {
+    flex-direction: column;
+  }
+
+  .admin-registration-date {
+    justify-items: start;
+    text-align: left;
   }
 
   .admin-event-actions {

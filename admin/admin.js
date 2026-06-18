@@ -8,6 +8,9 @@ let currentEditingId = null;
 let currentEvents = [];
 let currentContentEditingId = null;
 let currentContentRecords = [];
+let currentRegistrations = [];
+
+const registrationStatuses = ["nuevo", "contactado", "aceptado", "descartado"];
 
 const escapeHtml = (value = "") =>
   String(value)
@@ -30,6 +33,18 @@ const setMessage = (message, type = "info", scope = document) => {
 const setLoading = (isLoading) => {
   const loading = document.querySelector("[data-events-loading]");
   if (loading) loading.hidden = !isLoading;
+};
+
+const formatAdminDate = (value) => {
+  if (!value) return "Sin fecha";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+  return new Intl.DateTimeFormat("es-GT", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
 };
 
 const getCurrentSession = async () => {
@@ -726,6 +741,202 @@ const initContentPage = async (config) => {
   await loadContentRecords(config);
 };
 
+const setRegistrationsLoading = (isLoading) => {
+  const loading = document.querySelector("[data-registrations-loading]");
+  if (loading) loading.hidden = !isLoading;
+};
+
+const getRegistrationStatusOptions = (currentStatus = "nuevo") => {
+  const normalizedStatus = currentStatus || "nuevo";
+  const statuses = registrationStatuses.includes(normalizedStatus)
+    ? registrationStatuses
+    : [normalizedStatus, ...registrationStatuses];
+
+  return statuses
+    .map(
+      (status) =>
+        `<option value="${escapeHtml(status)}"${status === normalizedStatus ? " selected" : ""}>${escapeHtml(
+          status
+        )}</option>`
+    )
+    .join("");
+};
+
+const renderRegistrationsList = () => {
+  const list = document.querySelector("[data-registrations-list]");
+  if (!list) return;
+
+  if (!currentRegistrations.length) {
+    list.innerHTML = '<div class="admin-empty">Aun no hay solicitudes de miembros registradas.</div>';
+    return;
+  }
+
+  list.innerHTML = currentRegistrations
+    .map((registration) => {
+      const archivedLabel = registration.is_archived ? "Archivada" : "Activa";
+      const notes = registration.notes || "";
+
+      return `
+        <article class="admin-registration-item" data-registration-id="${escapeHtml(registration.id)}">
+          <div class="admin-registration-header">
+            <div>
+              <span class="status-badge">${escapeHtml(registration.status || "nuevo")}</span>
+              <h3>${escapeHtml(registration.name || "Solicitud sin nombre")}</h3>
+              <p>${escapeHtml(registration.email || "Sin correo")}</p>
+            </div>
+            <div class="admin-registration-date">
+              <span>${escapeHtml(archivedLabel)}</span>
+              <time datetime="${escapeHtml(registration.created_at || "")}">${escapeHtml(
+                formatAdminDate(registration.created_at)
+              )}</time>
+            </div>
+          </div>
+
+          <dl class="admin-registration-details">
+            <div>
+              <dt>Carrera</dt>
+              <dd>${escapeHtml(registration.career || "Sin carrera")}</dd>
+            </div>
+            <div>
+              <dt>Semestre</dt>
+              <dd>${escapeHtml(registration.semester || "Sin semestre")}</dd>
+            </div>
+            <div>
+              <dt>Area de interes</dt>
+              <dd>${escapeHtml(registration.interest_area || "Sin area")}</dd>
+            </div>
+            <div>
+              <dt>Telefono</dt>
+              <dd>${escapeHtml(registration.phone || "Sin telefono")}</dd>
+            </div>
+            <div class="admin-registration-wide">
+              <dt>Comentario</dt>
+              <dd>${escapeHtml(registration.comment || "Sin comentario")}</dd>
+            </div>
+          </dl>
+
+          <div class="admin-registration-controls">
+            <label>
+              Status
+              <select data-registration-status>
+                ${getRegistrationStatusOptions(registration.status)}
+              </select>
+            </label>
+            <label class="admin-registration-wide">
+              Notes
+              <textarea data-registration-notes rows="3">${escapeHtml(notes)}</textarea>
+            </label>
+            <label class="admin-checkbox">
+              <input type="checkbox" data-registration-archived${registration.is_archived ? " checked" : ""} />
+              Archivar solicitud
+            </label>
+          </div>
+
+          <div class="admin-event-actions">
+            <button type="button" data-registration-save="${escapeHtml(registration.id)}">Guardar cambios</button>
+            <button class="danger" type="button" data-registration-delete="${escapeHtml(registration.id)}">Eliminar</button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+};
+
+const loadRegistrations = async () => {
+  setRegistrationsLoading(true);
+
+  const { data, error } = await supabase
+    .from("member_registrations")
+    .select("id,created_at,updated_at,name,career,semester,interest_area,email,phone,comment,status,notes,is_archived")
+    .order("created_at", { ascending: false });
+
+  setRegistrationsLoading(false);
+
+  if (error) {
+    setMessage("No se pudieron cargar las solicitudes. Revisa la sesion admin y las politicas RLS.", "error");
+    currentRegistrations = [];
+    renderRegistrationsList();
+    return;
+  }
+
+  currentRegistrations = data || [];
+  renderRegistrationsList();
+};
+
+const initRegistrationsActions = () => {
+  const list = document.querySelector("[data-registrations-list]");
+  if (!list) return;
+
+  list.addEventListener("click", async (event) => {
+    const saveButton = event.target.closest("[data-registration-save]");
+    const deleteButton = event.target.closest("[data-registration-delete]");
+
+    if (saveButton) {
+      const item = saveButton.closest("[data-registration-id]");
+      const id = item?.dataset.registrationId;
+      if (!id) return;
+
+      const status = item.querySelector("[data-registration-status]")?.value || "nuevo";
+      const notesValue = item.querySelector("[data-registration-notes]")?.value || "";
+      const archivedInput = item.querySelector("[data-registration-archived]");
+
+      saveButton.disabled = true;
+      const { error } = await supabase
+        .from("member_registrations")
+        .update({
+          status,
+          notes: notesValue.trim() || null,
+          is_archived: Boolean(archivedInput?.checked),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+      saveButton.disabled = false;
+
+      if (error) {
+        setMessage("No se pudieron guardar los cambios de la solicitud.", "error");
+        return;
+      }
+
+      setMessage("Solicitud actualizada correctamente.", "success");
+      await loadRegistrations();
+      return;
+    }
+
+    if (deleteButton) {
+      const registration = currentRegistrations.find((item) => item.id === deleteButton.dataset.registrationDelete);
+      if (!registration) return;
+
+      const confirmed = window.confirm(
+        `Esta accion eliminara la solicitud de "${registration.name || registration.email || "miembro"}". ¿Deseas continuar?`
+      );
+      if (!confirmed) return;
+
+      deleteButton.disabled = true;
+      const { error } = await supabase.from("member_registrations").delete().eq("id", registration.id);
+      deleteButton.disabled = false;
+
+      if (error) {
+        setMessage("No se pudo eliminar la solicitud. Revisa permisos RLS.", "error");
+        return;
+      }
+
+      setMessage("Solicitud eliminada correctamente.", "success");
+      await loadRegistrations();
+    }
+  });
+
+  document.querySelector("[data-refresh-registrations]")?.addEventListener("click", loadRegistrations);
+};
+
+const initRegistrationsPage = async () => {
+  const session = await requireSession();
+  if (!session) return;
+
+  initLogout();
+  initRegistrationsActions();
+  await loadRegistrations();
+};
+
 if (page === "login") {
   initLogin();
 } else if (page === "dashboard") {
@@ -733,6 +944,8 @@ if (page === "login") {
   if (session) initLogout();
 } else if (page === "events") {
   await initEventsPage();
+} else if (page === "registrations") {
+  await initRegistrationsPage();
 } else if (contentConfigs[page]) {
   await initContentPage(contentConfigs[page]);
 }

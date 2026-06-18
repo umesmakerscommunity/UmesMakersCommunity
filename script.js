@@ -965,14 +965,68 @@ const initRegisterForm = () => {
   const form = document.querySelector("[data-register-form]");
   if (!form) return;
 
-  form.addEventListener("submit", (event) => {
+  const message = form.querySelector("[data-form-message]");
+  const submitButton = form.querySelector("button[type='submit']");
+  const defaultButtonText = submitButton?.textContent || "Enviar registro";
+
+  const setRegisterMessage = (text, type = "success") => {
+    if (!message) return;
+
+    message.textContent = text;
+    message.className = `form-message form-full form-message-${type}`;
+    message.hidden = !text;
+  };
+
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const message = form.querySelector("[data-form-message]");
-    form.reset();
-    if (message) {
-      message.textContent =
-        "Registro preparado. Cuando se conecte el backend, estos datos se enviaran automaticamente.";
-      message.removeAttribute("hidden");
+    setRegisterMessage("");
+
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("nombre") || "").trim(),
+      career: String(formData.get("carrera") || "").trim() || null,
+      semester: String(formData.get("semestre") || "").trim() || null,
+      interest_area: String(formData.get("area") || "").trim() || null,
+      email: String(formData.get("correo") || "").trim(),
+      phone: String(formData.get("telefono") || "").trim() || null,
+      comment: String(formData.get("comentario") || "").trim() || null,
+    };
+
+    if (!payload.name || !payload.email) {
+      setRegisterMessage("Ingresa tu nombre y correo para enviar la solicitud.", "error");
+      return;
+    }
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando...";
+    }
+
+    setRegisterMessage("Enviando tu solicitud...", "loading");
+
+    try {
+      const { supabase, isSupabaseConfigured } = await import("./supabaseClient.js");
+
+      if (!isSupabaseConfigured) {
+        throw new Error("Supabase no esta configurado.");
+      }
+
+      const { error } = await supabase.from("member_registrations").insert(payload);
+      if (error) throw error;
+
+      form.reset();
+      setRegisterMessage("Solicitud enviada correctamente. Te contactaremos pronto.", "success");
+    } catch (error) {
+      console.warn("No se pudo enviar el registro de miembro:", error);
+      setRegisterMessage(
+        "No pudimos enviar tu solicitud en este momento. Intentalo de nuevo o escribenos por correo.",
+        "error"
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = defaultButtonText;
+      }
     }
   });
 };

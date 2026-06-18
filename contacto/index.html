@@ -63,8 +63,8 @@
             <span class="section-kicker">Canales rapidos</span>
             <h2>Hablemos.</h2>
             <p>
-              El formulario es frontend-only por ahora y queda preparado para conectarse
-              a un backend o servicio de formularios.
+              El formulario envia tu solicitud al equipo de UMES Makers para darle
+              seguimiento desde el panel de administracion.
             </p>
             <div class="channel-list">
               <a class="channel-card" href="mailto:umesmakerscommunity@gmail.com">
@@ -104,15 +104,15 @@
             </label>
             <label>
               Carrera
-              <input type="text" name="carrera" required />
+              <input type="text" name="carrera" />
             </label>
             <label>
               Semestre
-              <input type="text" name="semestre" required />
+              <input type="text" name="semestre" />
             </label>
             <label>
               Area de interes
-              <select name="area" required>
+              <select name="area">
                 <option value="">Seleccionar area</option>
                 <option>Programacion</option>
                 <option>Electronica</option>
@@ -135,7 +135,7 @@
               <textarea name="comentario" rows="5"></textarea>
             </label>
             <button class="btn btn-primary form-full" type="submit">Quiero unirme a UMES Makers</button>
-            <p class="form-message form-full" data-form-message hidden></p>
+            <p class="form-message form-full" data-form-message aria-live="polite" hidden></p>
           </form>
         </div>
       </section>

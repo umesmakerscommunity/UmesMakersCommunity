@@ -1608,6 +1608,18 @@ h3 {
   padding: 14px;
 }
 
+.form-message-error {
+  border-color: rgba(245, 130, 32, 0.28);
+  background: rgba(245, 130, 32, 0.1);
+  color: #8a460d;
+}
+
+.form-message-loading {
+  border-color: rgba(18, 184, 232, 0.22);
+  background: rgba(18, 184, 232, 0.08);
+  color: #0f516e;
+}
+
 .community-section {
   background:
     linear-gradient(135deg, rgba(18, 184, 232, 0.08), transparent 40%),
