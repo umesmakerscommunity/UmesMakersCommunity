@@ -113,6 +113,31 @@ const normalizeResources = (resourcesValue) => {
   return [];
 };
 
+const normalizeTextList = (value) => {
+  if (!value) return [];
+
+  if (typeof value === "string") {
+    try {
+      return normalizeTextList(JSON.parse(value));
+    } catch {
+      return value
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeText(item)).filter(Boolean);
+  }
+
+  if (typeof value === "object") {
+    return Object.values(value).map((item) => normalizeText(item)).filter(Boolean);
+  }
+
+  return [];
+};
+
 const mapSupabaseEvent = (event) => ({
   slug: normalizeText(event.id),
   title: normalizeText(event.title, "Evento sin titulo"),
@@ -259,6 +284,54 @@ const fetchPublishedMakersFromSupabase = async () => {
   return (data || []).map(mapSupabaseMaker);
 };
 
+const mapSupabaseProject = (project) => {
+  const slug = normalizeText(project.slug);
+  const documentationUrl = normalizeText(project.documentation_url) || `/proyectos/${slug}/`;
+
+  return {
+    slug,
+    name: normalizeText(project.name, "Proyecto sin nombre"),
+    status: normalizeText(project.status, "En desarrollo"),
+    updated: normalizeText(project.updated_label, "Actualizacion pendiente"),
+    featured: Boolean(project.featured),
+    image: normalizeText(project.image_url, "/logo.png"),
+    summary: normalizeText(project.summary, "Descripcion pendiente."),
+    technologies: normalizeTextList(project.technologies),
+    components: normalizeTextList(project.components),
+    links: {
+      documentation: documentationUrl,
+      repository: normalizeText(project.repository_url, "#"),
+      designs: normalizeText(project.designs_url, "#"),
+    },
+    objective: normalizeText(project.objective, "Objetivo pendiente."),
+    source: normalizeText(project.source, "Codigo fuente pendiente."),
+    buildSteps: normalizeTextList(project.build_steps),
+    results: normalizeTextList(project.results),
+    improvements: normalizeTextList(project.improvements),
+  };
+};
+
+const fetchPublishedProjectsFromSupabase = async () => {
+  const { supabase, isSupabaseConfigured } = await import("./supabaseClient.js");
+
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase no esta configurado.");
+  }
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select(
+      "id,created_at,updated_at,slug,name,status,updated_label,featured,image_url,summary,technologies,components,documentation_url,repository_url,designs_url,objective,source,build_steps,results,improvements,sort_order,is_published"
+    )
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  return (data || []).map(mapSupabaseProject);
+};
+
 const projectCard = (project) => `
   <article class="project-card reveal">
     <a class="project-media" href="${project.links.documentation}" aria-label="Ver ${project.name}">
@@ -338,21 +411,72 @@ const eventCard = (event) => {
   `;
 };
 
-const renderProjectCollections = () => {
+const projectsMessage = (message, variant = "empty") => `
+  <div class="events-message events-message-${variant} reveal">
+    <p>${message}</p>
+  </div>
+`;
+
+const renderProjectCollections = (projectList = projects) => {
   document.querySelectorAll("[data-featured-projects]").forEach((container) => {
     const limit = Number(container.dataset.limit || 0);
-    const list = projects.filter((project) => project.featured);
-    container.innerHTML = (limit ? list.slice(0, limit) : list).map(projectCard).join("");
+    const list = projectList.filter((project) => project.featured);
+    const limitedList = limit ? list.slice(0, limit) : list;
+
+    container.innerHTML = limitedList.length
+      ? limitedList.map(projectCard).join("")
+      : projectsMessage("Pronto publicaremos proyectos destacados.");
   });
 
   document.querySelectorAll("[data-development-projects]").forEach((container) => {
-    const list = projects.filter((project) => project.status !== "Finalizado");
-    container.innerHTML = list.map(projectCard).join("");
+    const list = projectList.filter((project) => !isFinalizedStatus(project.status));
+    container.innerHTML = list.length
+      ? list.map(projectCard).join("")
+      : projectsMessage("No hay proyectos en desarrollo publicados por ahora.");
   });
 
   document.querySelectorAll("[data-projects-grid]").forEach((container) => {
-    container.innerHTML = projects.map(projectCard).join("");
+    container.innerHTML = projectList.length
+      ? projectList.map(projectCard).join("")
+      : projectsMessage("No hay proyectos publicados por ahora.");
   });
+
+  initReveal();
+};
+
+const initProjectCollections = async () => {
+  const hasProjectContainers = document.querySelector(
+    "[data-featured-projects], [data-development-projects], [data-projects-grid]"
+  );
+
+  if (!hasProjectContainers) return;
+
+  const shouldLoadSupabase = window.location.pathname.replace(/\/$/, "") === "/proyectos";
+
+  if (!shouldLoadSupabase) {
+    renderProjectCollections(projects);
+    return;
+  }
+
+  document
+    .querySelectorAll("[data-featured-projects], [data-development-projects], [data-projects-grid]")
+    .forEach((container) => {
+      container.innerHTML = projectsMessage("Cargando proyectos...", "loading");
+    });
+
+  try {
+    const supabaseProjects = await fetchPublishedProjectsFromSupabase();
+
+    if (supabaseProjects.length) {
+      renderProjectCollections(supabaseProjects);
+      return;
+    }
+
+    renderProjectCollections(projects);
+  } catch (error) {
+    console.warn("No se pudieron cargar proyectos desde Supabase:", error);
+    renderProjectCollections(projects);
+  }
 };
 
 const renderProjectDetail = () => {
@@ -875,7 +999,7 @@ function initReveal() {
   }
 }
 
-renderProjectCollections();
+initProjectCollections();
 renderProjectDetail();
 initEventCollections();
 initMakers();
