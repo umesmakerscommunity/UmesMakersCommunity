@@ -1,5 +1,5 @@
 import { projects } from "./src/data/projects.js";
-import { events } from "./src/data/events.js";
+import { events as mockEvents } from "./src/data/events.js";
 import { makers } from "./src/data/makers.js";
 import { resources } from "./src/data/resources.js";
 import { tools } from "./src/data/tools.js";
@@ -8,8 +8,8 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const getProjectBySlug = (slug) => projects.find((project) => project.slug === slug);
-const getStatusClass = (status) =>
-  `status-${status
+const getStatusClass = (status = "") =>
+  `status-${String(status)
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -23,6 +23,129 @@ const actionLink = (label, href, variant = "mini-link") => {
   return `<a class="${variant}${disabled ? " is-disabled" : ""}" href="${href || "#"}"${
     disabled ? ' aria-disabled="true"' : ""
   }>${label}</a>`;
+};
+
+const fallbackEventImage = "/assets/eventos/evento-1.png";
+
+const normalizeText = (value, fallback = "") => String(value || fallback).trim();
+
+const normalizeKey = (value) =>
+  normalizeText(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const isFinalizedStatus = (status) => normalizeKey(status) === "finalizado";
+
+const getComparableDate = (dateValue) => {
+  const date = new Date(`${dateValue || ""}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const formatDateLabel = (dateValue) => {
+  const date = getComparableDate(dateValue);
+
+  if (!date) return "Fecha por confirmar";
+
+  return new Intl.DateTimeFormat("es-GT", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+};
+
+const formatTimeValue = (timeValue) => {
+  if (!timeValue) return "";
+
+  const [hours, minutes = "00"] = String(timeValue).split(":");
+  const date = new Date();
+  date.setHours(Number(hours), Number(minutes), 0, 0);
+
+  if (Number.isNaN(date.getTime())) return String(timeValue);
+
+  return new Intl.DateTimeFormat("es-GT", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+};
+
+const formatTimeRange = (startTime, endTime) => {
+  const start = formatTimeValue(startTime);
+  const end = formatTimeValue(endTime);
+
+  if (start && end) return `${start} - ${end}`;
+  return start || end || "Hora por confirmar";
+};
+
+const normalizeResources = (resourcesValue) => {
+  if (!resourcesValue) return [];
+
+  if (typeof resourcesValue === "string") {
+    try {
+      return normalizeResources(JSON.parse(resourcesValue));
+    } catch {
+      return [{ label: "Recurso", type: "Link", url: resourcesValue }];
+    }
+  }
+
+  if (Array.isArray(resourcesValue)) {
+    return resourcesValue.map((resource, index) => {
+      if (typeof resource === "string") {
+        return { label: `Recurso ${index + 1}`, type: "Link", url: resource };
+      }
+
+      return {
+        label: normalizeText(resource?.label || resource?.title || resource?.name, `Recurso ${index + 1}`),
+        type: normalizeText(resource?.type, "Link"),
+        url: normalizeText(resource?.url || resource?.href, "#"),
+      };
+    });
+  }
+
+  if (typeof resourcesValue === "object") {
+    return Object.entries(resourcesValue).map(([label, url]) => ({
+      label,
+      type: "Link",
+      url: normalizeText(url, "#"),
+    }));
+  }
+
+  return [];
+};
+
+const mapSupabaseEvent = (event) => ({
+  slug: normalizeText(event.id),
+  title: normalizeText(event.title, "Evento sin titulo"),
+  date: normalizeText(event.event_date),
+  dateLabel: formatDateLabel(event.event_date),
+  time: formatTimeRange(event.start_time, event.end_time),
+  place: normalizeText(event.location, "Lugar por confirmar"),
+  type: normalizeText(event.type, "Evento"),
+  status: normalizeText(event.status, "Proximo"),
+  image: normalizeText(event.image_url, fallbackEventImage),
+  summary: normalizeText(event.description, "Descripcion pendiente."),
+  resources: normalizeResources(event.resources),
+  registration: normalizeText(event.registration_url, ""),
+});
+
+const fetchPublishedEventsFromSupabase = async () => {
+  const { supabase, isSupabaseConfigured } = await import("./supabaseClient.js");
+
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase no esta configurado.");
+  }
+
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      "id,created_at,title,description,event_date,start_time,end_time,location,type,status,image_url,registration_url,resources,is_published"
+    )
+    .eq("is_published", true)
+    .order("event_date", { ascending: true });
+
+  if (error) throw error;
+
+  return (data || []).map(mapSupabaseEvent);
 };
 
 const projectCard = (project) => `
@@ -51,19 +174,29 @@ const projectCard = (project) => `
 `;
 
 const eventCard = (event) => {
-  const isFinished = event.status === "Finalizado";
+  const status = normalizeText(event.status, "Proximo");
+  const type = normalizeText(event.type, "Evento");
+  const isFinished = isFinalizedStatus(status);
+  const hasResources = Boolean(event.resources?.length);
+  const hasRegistration = Boolean(event.registration);
+  const cardActions = [
+    hasRegistration ? actionLink("Registrarme", event.registration) : "",
+    hasResources ? actionLink(isFinished ? "Descargar recursos" : "Ver recursos", event.resources[0]?.url) : "",
+  ]
+    .filter(Boolean)
+    .join("");
 
   return `
-    <article class="event-card reveal" data-event-type="${event.type}">
+    <article class="event-card reveal" data-event-type="${type}">
       <div class="event-media">
-        <img src="${event.image}" alt="Flyer de ${event.title}" loading="lazy" />
-        <span class="event-type">${event.type}</span>
+        <img src="${event.image || fallbackEventImage}" alt="Flyer de ${event.title}" loading="lazy" />
+        <span class="event-type">${type}</span>
       </div>
       <div class="event-content">
         <div class="event-meta">
           <span>${event.dateLabel}</span>
           <span>${event.time}</span>
-          <span>${event.status}</span>
+          <span>${status}</span>
         </div>
         <h3>${event.title}</h3>
         <p>${event.summary}</p>
@@ -71,27 +204,24 @@ const eventCard = (event) => {
           <div><dt>Lugar</dt><dd>${event.place}</dd></div>
         </dl>
         ${
-          isFinished && event.resources?.length
+          hasResources
             ? `<div class="event-resources">
                 <strong>Recursos</strong>
                 ${event.resources
                   .map(
-                    (resource) =>
-                      `<a href="${resource.url}"${
-                        resource.url === "#" ? ' aria-disabled="true" class="is-disabled"' : ""
+                    (resource) => {
+                      const disabled = !resource.url || resource.url === "#";
+
+                      return `<a href="${resource.url || "#"}"${
+                        disabled ? ' aria-disabled="true" class="is-disabled"' : ""
                       }><span>${resource.type}</span>${resource.label}</a>`
+                    }
                   )
                   .join("")}
               </div>`
             : ""
         }
-        <div class="card-actions">
-          ${
-            isFinished
-              ? actionLink("Descargar recursos", event.resources?.[0]?.url || "#")
-              : actionLink("Registrarme", event.registration || "#")
-          }
-        </div>
+        ${cardActions ? `<div class="card-actions">${cardActions}</div>` : ""}
       </div>
     </article>
   `;
@@ -210,51 +340,103 @@ const renderProjectDetail = () => {
   `;
 };
 
-const getUpcomingEvents = () =>
-  events
-    .filter((event) => new Date(`${event.date}T00:00:00`) >= today && event.status !== "Finalizado")
+const getUpcomingEvents = (eventList) =>
+  eventList
+    .filter((event) => {
+      const eventDate = getComparableDate(event.date);
+      return eventDate && eventDate >= today && !isFinalizedStatus(event.status);
+    })
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-const getPastEvents = () =>
-  events
-    .filter((event) => new Date(`${event.date}T00:00:00`) < today || event.status === "Finalizado")
+const getPastEvents = (eventList) =>
+  eventList
+    .filter((event) => {
+      const eventDate = getComparableDate(event.date);
+      return (eventDate && eventDate < today) || isFinalizedStatus(event.status);
+    })
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-const renderEventCollections = () => {
+const eventsMessage = (message, variant = "info") => `
+  <div class="events-message events-message-${variant} reveal">
+    <p>${message}</p>
+  </div>
+`;
+
+const setEventContainersLoading = () => {
+  document
+    .querySelectorAll("[data-upcoming-events], [data-past-events], [data-event-agenda]")
+    .forEach((container) => {
+      container.innerHTML = eventsMessage("Cargando eventos...", "loading");
+    });
+};
+
+const setEventsFeedback = (message, variant = "info") => {
+  const agenda = document.querySelector("[data-event-agenda]");
+  const upcomingEvents = document.querySelector("[data-upcoming-events]");
+  if (!agenda || !upcomingEvents) return;
+
+  const currentFeedback = document.querySelector("[data-events-feedback]");
+
+  if (!message) {
+    currentFeedback?.remove();
+    return;
+  }
+
+  const feedback = currentFeedback || document.createElement("div");
+  feedback.dataset.eventsFeedback = "";
+  feedback.className = `events-feedback events-feedback-${variant} reveal is-visible`;
+  feedback.textContent = message;
+
+  if (!currentFeedback) {
+    upcomingEvents.before(feedback);
+  }
+};
+
+const renderEventCollections = (eventList = mockEvents) => {
   document.querySelectorAll("[data-upcoming-events]").forEach((container) => {
     const limit = Number(container.dataset.limit || 0);
-    const list = getUpcomingEvents();
-    container.innerHTML = (limit ? list.slice(0, limit) : list).map(eventCard).join("");
+    const list = getUpcomingEvents(eventList);
+    const limitedList = limit ? list.slice(0, limit) : list;
+
+    container.innerHTML = limitedList.length
+      ? limitedList.map(eventCard).join("")
+      : eventsMessage("Proximamente anunciaremos nuevos eventos.", "empty");
   });
 
   document.querySelectorAll("[data-past-events]").forEach((container) => {
-    container.innerHTML = getPastEvents().map(eventCard).join("");
+    const list = getPastEvents(eventList);
+
+    container.innerHTML = list.length
+      ? list.map(eventCard).join("")
+      : eventsMessage("Aun no hay eventos realizados para mostrar.", "empty");
   });
 
   const agenda = document.querySelector("[data-event-agenda]");
   if (agenda) {
     const renderAgenda = (filter = "todos") => {
-      const filtered = events
-        .filter((event) => filter === "todos" || event.type.toLowerCase() === filter)
+      const filtered = eventList
+        .filter((event) => filter === "todos" || normalizeText(event.type).toLowerCase() === filter)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      agenda.innerHTML = filtered
-        .map(
-          (event) => `
-            <article class="agenda-item reveal">
-              <time datetime="${event.date}">
-                <strong>${event.dateLabel}</strong>
-                <span>${event.time}</span>
-              </time>
-              <div>
-                <span class="status-badge ${getStatusClass(event.status)}">${event.status}</span>
-                <h3>${event.title}</h3>
-                <p>${event.place} · ${event.type}</p>
-              </div>
-            </article>
-          `
-        )
-        .join("");
+      agenda.innerHTML = filtered.length
+        ? filtered
+            .map(
+              (event) => `
+                <article class="agenda-item reveal">
+                  <time datetime="${event.date}">
+                    <strong>${event.dateLabel}</strong>
+                    <span>${event.time}</span>
+                  </time>
+                  <div>
+                    <span class="status-badge ${getStatusClass(event.status)}">${event.status}</span>
+                    <h3>${event.title}</h3>
+                    <p>${event.place} · ${event.type}</p>
+                  </div>
+                </article>
+              `
+            )
+            .join("")
+        : eventsMessage("No hay eventos en esta categoria por ahora.", "empty");
       initReveal();
     };
 
@@ -269,6 +451,44 @@ const renderEventCollections = () => {
     });
 
     renderAgenda();
+  }
+};
+
+const initEventCollections = async () => {
+  const hasEventContainers = document.querySelector(
+    "[data-upcoming-events], [data-past-events], [data-event-agenda]"
+  );
+
+  if (!hasEventContainers) return;
+
+  const shouldLoadSupabase = Boolean(document.querySelector("[data-event-agenda]"));
+
+  if (!shouldLoadSupabase) {
+    renderEventCollections(mockEvents);
+    return;
+  }
+
+  setEventsFeedback("Cargando eventos...", "loading");
+  setEventContainersLoading();
+
+  try {
+    const supabaseEvents = await fetchPublishedEventsFromSupabase();
+
+    if (supabaseEvents.length) {
+      setEventsFeedback("");
+      renderEventCollections(supabaseEvents);
+      return;
+    }
+
+    setEventsFeedback(
+      "Proximamente anunciaremos nuevos eventos publicados. Mientras tanto, mostramos eventos de ejemplo.",
+      "empty"
+    );
+    renderEventCollections(mockEvents);
+  } catch (error) {
+    console.warn("No se pudieron cargar eventos desde Supabase:", error);
+    setEventsFeedback("No pudimos conectar con Supabase. Mostrando eventos de ejemplo por ahora.", "error");
+    renderEventCollections(mockEvents);
   }
 };
 
@@ -449,7 +669,7 @@ function initReveal() {
 
 renderProjectCollections();
 renderProjectDetail();
-renderEventCollections();
+initEventCollections();
 renderMakers();
 renderTools();
 renderResources();
