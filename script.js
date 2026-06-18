@@ -2,7 +2,7 @@ import { projects } from "./src/data/projects.js";
 import { events as mockEvents } from "./src/data/events.js";
 import { makers } from "./src/data/makers.js";
 import { resources as mockResources } from "./src/data/resources.js";
-import { tools } from "./src/data/tools.js";
+import { tools as mockTools } from "./src/data/tools.js";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -173,6 +173,34 @@ const fetchPublishedResourcesFromSupabase = async () => {
   if (error) throw error;
 
   return (data || []).map(mapSupabaseResource);
+};
+
+const mapSupabaseTool = (tool) => ({
+  name: normalizeText(tool.name, "Herramienta sin nombre"),
+  category: normalizeText(tool.category, "General"),
+  availability: normalizeText(tool.availability, "Disponible"),
+  quantity: Number(tool.quantity || 0),
+  recommendedUse: normalizeText(tool.recommended_use, "Uso recomendado pendiente."),
+});
+
+const fetchPublishedToolsFromSupabase = async () => {
+  const { supabase, isSupabaseConfigured } = await import("./supabaseClient.js");
+
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase no esta configurado.");
+  }
+
+  const { data, error } = await supabase
+    .from("tools")
+    .select("id,created_at,updated_at,name,category,availability,quantity,recommended_use,sort_order,is_published")
+    .eq("is_published", true)
+    .order("category", { ascending: true })
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  return (data || []).map(mapSupabaseTool);
 };
 
 const projectCard = (project) => `
@@ -544,11 +572,23 @@ const renderMakers = () => {
     .join("");
 };
 
-const renderTools = () => {
+const toolsMessage = (message, variant = "empty") => `
+  <div class="events-message events-message-${variant} reveal">
+    <p>${message}</p>
+  </div>
+`;
+
+const renderTools = (toolList = mockTools) => {
   const container = document.querySelector("[data-tools-list]");
   if (!container) return;
 
-  const categories = [...new Set(tools.map((tool) => tool.category))];
+  if (!toolList.length) {
+    container.innerHTML = toolsMessage("No hay herramientas disponibles por ahora.");
+    initReveal();
+    return;
+  }
+
+  const categories = [...new Set(toolList.map((tool) => tool.category))];
   container.innerHTML = categories
     .map(
       (category) => `
@@ -560,7 +600,7 @@ const renderTools = () => {
             </div>
           </div>
           <div class="tool-grid">
-            ${tools
+            ${toolList
               .filter((tool) => tool.category === category)
               .map(
                 (tool) => `
@@ -580,6 +620,28 @@ const renderTools = () => {
       `
     )
     .join("");
+  initReveal();
+};
+
+const initTools = async () => {
+  const container = document.querySelector("[data-tools-list]");
+  if (!container) return;
+
+  container.innerHTML = toolsMessage("Cargando herramientas...", "loading");
+
+  try {
+    const supabaseTools = await fetchPublishedToolsFromSupabase();
+
+    if (supabaseTools.length) {
+      renderTools(supabaseTools);
+      return;
+    }
+
+    renderTools(mockTools);
+  } catch (error) {
+    console.warn("No se pudieron cargar herramientas desde Supabase:", error);
+    renderTools(mockTools);
+  }
 };
 
 const resourceMessage = (message, variant = "empty") => `
@@ -727,7 +789,7 @@ renderProjectCollections();
 renderProjectDetail();
 initEventCollections();
 renderMakers();
-renderTools();
+initTools();
 initResources();
 initNavigation();
 initRegisterForm();
