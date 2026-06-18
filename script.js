@@ -1,7 +1,7 @@
 import { projects } from "./src/data/projects.js";
 import { events as mockEvents } from "./src/data/events.js";
 import { makers } from "./src/data/makers.js";
-import { resources } from "./src/data/resources.js";
+import { resources as mockResources } from "./src/data/resources.js";
 import { tools } from "./src/data/tools.js";
 
 const today = new Date();
@@ -146,6 +146,33 @@ const fetchPublishedEventsFromSupabase = async () => {
   if (error) throw error;
 
   return (data || []).map(mapSupabaseEvent);
+};
+
+const mapSupabaseResource = (resource) => ({
+  title: normalizeText(resource.title, "Recurso sin titulo"),
+  category: normalizeText(resource.category, "General"),
+  type: normalizeText(resource.type, "Recurso"),
+  summary: normalizeText(resource.summary, "Descripcion pendiente."),
+  url: normalizeText(resource.url, "#"),
+});
+
+const fetchPublishedResourcesFromSupabase = async () => {
+  const { supabase, isSupabaseConfigured } = await import("./supabaseClient.js");
+
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase no esta configurado.");
+  }
+
+  const { data, error } = await supabase
+    .from("resources")
+    .select("id,created_at,updated_at,title,category,type,summary,url,sort_order,is_published")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  return (data || []).map(mapSupabaseResource);
 };
 
 const projectCard = (project) => `
@@ -555,29 +582,37 @@ const renderTools = () => {
     .join("");
 };
 
-const renderResources = () => {
+const resourceMessage = (message, variant = "empty") => `
+  <div class="events-message events-message-${variant} reveal">
+    <p>${message}</p>
+  </div>
+`;
+
+const renderResources = (resourceList = mockResources) => {
   const container = document.querySelector("[data-resources-grid]");
   if (!container) return;
 
   const render = (filter = "todos") => {
     const filtered =
       filter === "todos"
-        ? resources
-        : resources.filter((resource) => resource.category.toLowerCase() === filter);
+        ? resourceList
+        : resourceList.filter((resource) => normalizeKey(resource.category) === normalizeKey(filter));
 
-    container.innerHTML = filtered
-      .map(
-        (resource) => `
-          <article class="resource-card reveal">
-            <span class="resource-type">${resource.type}</span>
-            <h3>${resource.title}</h3>
-            <p>${resource.summary}</p>
-            <div class="tag-list"><span>${resource.category}</span></div>
-            ${actionLink("Abrir recurso", resource.url)}
-          </article>
-        `
-      )
-      .join("");
+    container.innerHTML = filtered.length
+      ? filtered
+          .map(
+            (resource) => `
+              <article class="resource-card reveal">
+                <span class="resource-type">${resource.type}</span>
+                <h3>${resource.title}</h3>
+                <p>${resource.summary}</p>
+                <div class="tag-list"><span>${resource.category}</span></div>
+                ${actionLink("Abrir recurso", resource.url)}
+              </article>
+            `
+          )
+          .join("")
+      : resourceMessage("No hay recursos disponibles en esta categoria por ahora.");
     initReveal();
   };
 
@@ -592,6 +627,27 @@ const renderResources = () => {
   });
 
   render();
+};
+
+const initResources = async () => {
+  const container = document.querySelector("[data-resources-grid]");
+  if (!container) return;
+
+  container.innerHTML = resourceMessage("Cargando recursos...", "loading");
+
+  try {
+    const supabaseResources = await fetchPublishedResourcesFromSupabase();
+
+    if (supabaseResources.length) {
+      renderResources(supabaseResources);
+      return;
+    }
+
+    renderResources(mockResources);
+  } catch (error) {
+    console.warn("No se pudieron cargar recursos desde Supabase:", error);
+    renderResources(mockResources);
+  }
 };
 
 const initNavigation = () => {
@@ -672,7 +728,7 @@ renderProjectDetail();
 initEventCollections();
 renderMakers();
 renderTools();
-renderResources();
+initResources();
 initNavigation();
 initRegisterForm();
 initReveal();
