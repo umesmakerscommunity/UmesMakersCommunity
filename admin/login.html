@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body class="admin-body" data-admin-page="login">
+    <main class="admin-auth">
+      <section class="admin-auth-card">
+        <a class="admin-brand" href="/">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span>UMES Makers Community</span>
+        </a>
+
+        <div>
+          <span class="section-kicker">Admin</span>
+          <h1>Iniciar sesion</h1>
+          <p>Accede con el usuario autorizado en Supabase Authentication.</p>
+        </div>
+
+        <form class="admin-form" data-login-form>
+          <label>
+            Email
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+          <label>
+            Contraseña
+            <input type="password" name="password" autocomplete="current-password" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Entrar al panel</button>
+          <p class="admin-message" data-admin-message hidden></p>
+        </form>
+      </section>
+    </main>
+
+    <script type="module" src="/admin/admin.js"></script>
+  </body>
+</html>

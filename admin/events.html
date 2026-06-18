@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestionar eventos | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body class="admin-body" data-admin-page="events">
+    <header class="admin-header">
+      <nav class="admin-nav container" aria-label="Navegacion admin">
+        <a class="admin-brand" href="/admin/dashboard.html">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span>Admin UMES Makers</span>
+        </a>
+        <div class="admin-nav-actions">
+          <a href="/admin/dashboard.html">Dashboard</a>
+          <a href="/">Ver sitio</a>
+          <button type="button" data-logout>Cerrar sesion</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-main container">
+      <section class="admin-page-heading">
+        <span class="section-kicker">Eventos</span>
+        <h1>Gestionar eventos</h1>
+        <p>Crea y actualiza eventos publicados en la web de UMES Makers Community.</p>
+        <p class="admin-user" data-admin-user></p>
+      </section>
+
+      <section class="admin-events-layout">
+        <form class="admin-form admin-event-form" data-event-form>
+          <div class="admin-form-heading">
+            <h2 data-event-form-title>Nuevo evento</h2>
+            <button class="mini-link" type="button" data-event-cancel hidden>Cancelar edicion</button>
+          </div>
+
+          <input type="hidden" name="id" />
+
+          <label>
+            Titulo
+            <input type="text" name="title" required />
+          </label>
+
+          <label class="admin-full">
+            Descripcion
+            <textarea name="description" rows="4"></textarea>
+          </label>
+
+          <label>
+            Fecha
+            <input type="date" name="event_date" />
+          </label>
+
+          <label>
+            Hora inicio
+            <input type="text" name="start_time" placeholder="10:00" />
+          </label>
+
+          <label>
+            Hora fin
+            <input type="text" name="end_time" placeholder="12:00" />
+          </label>
+
+          <label>
+            Lugar
+            <input type="text" name="location" />
+          </label>
+
+          <label>
+            Tipo
+            <input type="text" name="type" placeholder="Taller, meetup, demo" />
+          </label>
+
+          <label>
+            Estado
+            <input type="text" name="status" placeholder="Proximo, Finalizado" />
+          </label>
+
+          <label class="admin-full">
+            URL de imagen
+            <input type="url" name="image_url" />
+          </label>
+
+          <label class="admin-full">
+            URL de registro
+            <input type="url" name="registration_url" />
+          </label>
+
+          <label class="admin-full">
+            Recursos
+            <textarea
+              name="resources"
+              rows="4"
+              placeholder="Pega links de Drive, GitHub o YouTube. Tambien puedes pegar JSON si lo necesitas."
+            ></textarea>
+          </label>
+
+          <label class="admin-checkbox admin-full">
+            <input type="checkbox" name="is_published" />
+            Publicar evento
+          </label>
+
+          <button class="btn btn-primary admin-full" type="submit">Guardar evento</button>
+          <p class="admin-message admin-full" data-admin-message hidden></p>
+        </form>
+
+        <section class="admin-list-panel">
+          <div class="admin-list-heading">
+            <h2>Eventos existentes</h2>
+            <button class="mini-link" type="button" data-refresh-events>Actualizar</button>
+          </div>
+          <div class="admin-loading" data-events-loading hidden>Cargando eventos...</div>
+          <div class="admin-events-list" data-events-list></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/admin/admin.js"></script>
+  </body>
+</html>

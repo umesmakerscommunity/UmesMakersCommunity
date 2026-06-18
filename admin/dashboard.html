@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de administracion | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body class="admin-body" data-admin-page="dashboard">
+    <header class="admin-header">
+      <nav class="admin-nav container" aria-label="Navegacion admin">
+        <a class="admin-brand" href="/admin/dashboard.html">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span>Admin UMES Makers</span>
+        </a>
+        <div class="admin-nav-actions">
+          <a href="/">Ver sitio</a>
+          <button type="button" data-logout>Cerrar sesion</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-main container">
+      <section class="admin-page-heading">
+        <span class="section-kicker">Administracion</span>
+        <h1>Panel de administración</h1>
+        <p>Gestiona eventos, recursos y contenido de UMES Makers Community.</p>
+        <p class="admin-user" data-admin-user></p>
+      </section>
+
+      <section class="admin-card-grid">
+        <a class="admin-action-card" href="/admin/events.html">
+          <span>Eventos</span>
+          <h2>Gestionar eventos</h2>
+          <p>Crea, edita, publica u oculta actividades desde Supabase.</p>
+        </a>
+      </section>
+    </main>
+
+    <script type="module" src="/admin/admin.js"></script>
+  </body>
+</html>
