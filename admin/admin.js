@@ -6,6 +6,8 @@ const dashboardUrl = "/admin/dashboard.html";
 
 let currentEditingId = null;
 let currentEvents = [];
+let currentContentEditingId = null;
+let currentContentRecords = [];
 
 const escapeHtml = (value = "") =>
   String(value)
@@ -116,6 +118,139 @@ const formatResourcesForInput = (resources) => {
   if (!resources) return "";
   if (typeof resources === "string") return resources;
   return JSON.stringify(resources, null, 2);
+};
+
+const parseLines = (value) =>
+  String(value || "")
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+const formatLines = (value) => {
+  if (!value) return "";
+  if (Array.isArray(value)) return value.join("\n");
+  if (typeof value === "string") return value;
+  return Object.values(value).join("\n");
+};
+
+const parseNumber = (value) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+};
+
+const contentConfigs = {
+  projects: {
+    table: "projects",
+    singular: "proyecto",
+    plural: "proyectos",
+    titleField: "name",
+    select:
+      "id,created_at,updated_at,slug,name,status,updated_label,featured,image_url,summary,technologies,components,documentation_url,repository_url,designs_url,objective,source,build_steps,results,improvements,sort_order,is_published",
+    order: [
+      ["sort_order", true],
+      ["created_at", true],
+    ],
+    requiredField: "name",
+    fields: [
+      { name: "slug", type: "text" },
+      { name: "name", type: "text" },
+      { name: "status", type: "text" },
+      { name: "updated_label", type: "text" },
+      { name: "featured", type: "checkbox" },
+      { name: "image_url", type: "text" },
+      { name: "summary", type: "text" },
+      { name: "technologies", type: "lines" },
+      { name: "components", type: "lines" },
+      { name: "documentation_url", type: "text" },
+      { name: "repository_url", type: "text" },
+      { name: "designs_url", type: "text" },
+      { name: "objective", type: "text" },
+      { name: "source", type: "text" },
+      { name: "build_steps", type: "lines" },
+      { name: "results", type: "lines" },
+      { name: "improvements", type: "lines" },
+      { name: "sort_order", type: "number" },
+      { name: "is_published", type: "checkbox" },
+    ],
+    listMeta: (record) => [
+      record.slug || "Sin slug",
+      record.status || "Sin estado",
+      record.featured ? "Destacado" : "No destacado",
+    ],
+  },
+  makers: {
+    table: "makers",
+    singular: "maker",
+    plural: "makers",
+    titleField: "name",
+    select: "id,created_at,updated_at,name,initials,area,bio,github_url,linkedin_url,badges,sort_order,is_published",
+    order: [
+      ["sort_order", true],
+      ["created_at", true],
+    ],
+    requiredField: "name",
+    fields: [
+      { name: "name", type: "text" },
+      { name: "initials", type: "text" },
+      { name: "area", type: "text" },
+      { name: "bio", type: "text" },
+      { name: "github_url", type: "text" },
+      { name: "linkedin_url", type: "text" },
+      { name: "badges", type: "lines" },
+      { name: "sort_order", type: "number" },
+      { name: "is_published", type: "checkbox" },
+    ],
+    listMeta: (record) => [record.initials || "Sin iniciales", record.area || "Sin area"],
+  },
+  tools: {
+    table: "tools",
+    singular: "herramienta",
+    plural: "herramientas",
+    titleField: "name",
+    select: "id,created_at,updated_at,name,category,availability,quantity,recommended_use,sort_order,is_published",
+    order: [
+      ["category", true],
+      ["sort_order", true],
+      ["created_at", true],
+    ],
+    requiredField: "name",
+    fields: [
+      { name: "name", type: "text" },
+      { name: "category", type: "text" },
+      { name: "availability", type: "text" },
+      { name: "quantity", type: "number" },
+      { name: "recommended_use", type: "text" },
+      { name: "sort_order", type: "number" },
+      { name: "is_published", type: "checkbox" },
+    ],
+    listMeta: (record) => [
+      record.category || "Sin categoria",
+      record.availability || "Sin disponibilidad",
+      `Cantidad: ${record.quantity ?? 0}`,
+    ],
+  },
+  resources: {
+    table: "resources",
+    singular: "recurso",
+    plural: "recursos",
+    titleField: "title",
+    select: "id,created_at,updated_at,title,category,type,summary,url,sort_order,is_published",
+    order: [
+      ["sort_order", true],
+      ["created_at", true],
+    ],
+    requiredField: "title",
+    fields: [
+      { name: "title", type: "text" },
+      { name: "category", type: "text" },
+      { name: "type", type: "text" },
+      { name: "summary", type: "text" },
+      { name: "url", type: "text" },
+      { name: "sort_order", type: "number" },
+      { name: "is_published", type: "checkbox" },
+    ],
+    listMeta: (record) => [record.category || "Sin categoria", record.type || "Sin tipo"],
+  },
 };
 
 const getEventPayload = (form) => {
@@ -346,6 +481,251 @@ const initEventsPage = async () => {
   await loadEvents();
 };
 
+const setContentLoading = (isLoading) => {
+  const loading = document.querySelector("[data-content-loading]");
+  if (loading) loading.hidden = !isLoading;
+};
+
+const getContentPayload = (form, config) => {
+  const formData = new FormData(form);
+
+  return config.fields.reduce((payload, field) => {
+    if (field.type === "checkbox") {
+      payload[field.name] = formData.get(field.name) === "on";
+      return payload;
+    }
+
+    if (field.type === "number") {
+      payload[field.name] = parseNumber(formData.get(field.name));
+      return payload;
+    }
+
+    if (field.type === "lines") {
+      payload[field.name] = parseLines(formData.get(field.name));
+      return payload;
+    }
+
+    payload[field.name] = String(formData.get(field.name) || "").trim() || null;
+    return payload;
+  }, {});
+};
+
+const resetContentForm = (config) => {
+  const form = document.querySelector("[data-content-form]");
+  if (!form) return;
+
+  currentContentEditingId = null;
+  form.reset();
+  form.elements.id.value = "";
+  document.querySelector("[data-content-form-title]").textContent = `Nuevo ${config.singular}`;
+  document.querySelector("[data-content-cancel]").hidden = true;
+};
+
+const fillContentForm = (record, config) => {
+  const form = document.querySelector("[data-content-form]");
+  if (!form) return;
+
+  currentContentEditingId = record.id;
+  form.elements.id.value = record.id || "";
+
+  config.fields.forEach((field) => {
+    const element = form.elements[field.name];
+    if (!element) return;
+
+    if (field.type === "checkbox") {
+      element.checked = Boolean(record[field.name]);
+      return;
+    }
+
+    if (field.type === "lines") {
+      element.value = formatLines(record[field.name]);
+      return;
+    }
+
+    element.value = record[field.name] ?? "";
+  });
+
+  document.querySelector("[data-content-form-title]").textContent = `Editar ${config.singular}`;
+  document.querySelector("[data-content-cancel]").hidden = false;
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const renderContentList = (config) => {
+  const list = document.querySelector("[data-content-list]");
+  if (!list) return;
+
+  if (!currentContentRecords.length) {
+    list.innerHTML = `<div class="admin-empty">Aun no hay ${config.plural} registrados.</div>`;
+    return;
+  }
+
+  list.innerHTML = currentContentRecords
+    .map((record) => {
+      const title = record[config.titleField] || `${config.singular} sin titulo`;
+      const publishedLabel = record.is_published ? "Publicado" : "Oculto";
+      const toggleLabel = record.is_published ? "Ocultar" : "Publicar";
+      const meta = config.listMeta(record).filter(Boolean).join(" · ");
+
+      return `
+        <article class="admin-event-item">
+          <div>
+            <span class="status-badge">${escapeHtml(publishedLabel)}</span>
+            <h3>${escapeHtml(title)}</h3>
+            <p>${escapeHtml(meta || "Sin detalles")}</p>
+            <p>Orden: ${escapeHtml(record.sort_order ?? 0)}</p>
+          </div>
+          <div class="admin-event-actions">
+            <button type="button" data-content-edit="${escapeHtml(record.id)}">Editar</button>
+            <button type="button" data-content-toggle="${escapeHtml(record.id)}">${toggleLabel}</button>
+            <button class="danger" type="button" data-content-delete="${escapeHtml(record.id)}">Eliminar</button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+};
+
+const loadContentRecords = async (config) => {
+  setContentLoading(true);
+
+  let query = supabase.from(config.table).select(config.select);
+  config.order.forEach(([column, ascending]) => {
+    query = query.order(column, { ascending });
+  });
+
+  const { data, error } = await query;
+  setContentLoading(false);
+
+  if (error) {
+    setMessage(`No se pudieron cargar ${config.plural}. Revisa las politicas RLS en Supabase.`, "error");
+    currentContentRecords = [];
+    renderContentList(config);
+    return;
+  }
+
+  currentContentRecords = data || [];
+  renderContentList(config);
+};
+
+const initContentForm = (config) => {
+  const form = document.querySelector("[data-content-form]");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setMessage("");
+
+    const payload = getContentPayload(form, config);
+    const submitButton = form.querySelector("button[type='submit']");
+
+    if (!payload[config.requiredField]) {
+      setMessage(`El campo principal de ${config.singular} es obligatorio.`, "error");
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Guardando...";
+
+    const request = currentContentEditingId
+      ? supabase.from(config.table).update(payload).eq("id", currentContentEditingId)
+      : supabase.from(config.table).insert(payload);
+
+    const { error } = await request;
+
+    submitButton.disabled = false;
+    submitButton.textContent = `Guardar ${config.singular}`;
+
+    if (error) {
+      setMessage(`No se pudo guardar ${config.singular}. Verifica permisos RLS y los datos ingresados.`, "error");
+      return;
+    }
+
+    setMessage(
+      currentContentEditingId ? `${config.singular} actualizado correctamente.` : `${config.singular} creado correctamente.`,
+      "success"
+    );
+    resetContentForm(config);
+    await loadContentRecords(config);
+  });
+
+  document.querySelector("[data-content-cancel]").addEventListener("click", () => {
+    resetContentForm(config);
+    setMessage("");
+  });
+
+  document.querySelector("[data-content-refresh]").addEventListener("click", () => loadContentRecords(config));
+};
+
+const initContentActions = (config) => {
+  const list = document.querySelector("[data-content-list]");
+  if (!list) return;
+
+  list.addEventListener("click", async (event) => {
+    const editButton = event.target.closest("[data-content-edit]");
+    const toggleButton = event.target.closest("[data-content-toggle]");
+    const deleteButton = event.target.closest("[data-content-delete]");
+
+    if (editButton) {
+      const record = currentContentRecords.find((item) => item.id === editButton.dataset.contentEdit);
+      if (record) fillContentForm(record, config);
+      return;
+    }
+
+    if (toggleButton) {
+      const record = currentContentRecords.find((item) => item.id === toggleButton.dataset.contentToggle);
+      if (!record) return;
+
+      toggleButton.disabled = true;
+      const { error } = await supabase
+        .from(config.table)
+        .update({ is_published: !record.is_published })
+        .eq("id", record.id);
+      toggleButton.disabled = false;
+
+      if (error) {
+        setMessage(`No se pudo cambiar el estado de publicacion de ${config.singular}.`, "error");
+        return;
+      }
+
+      setMessage(record.is_published ? `${config.singular} ocultado correctamente.` : `${config.singular} publicado correctamente.`, "success");
+      await loadContentRecords(config);
+      return;
+    }
+
+    if (deleteButton) {
+      const record = currentContentRecords.find((item) => item.id === deleteButton.dataset.contentDelete);
+      if (!record) return;
+
+      const title = record[config.titleField] || config.singular;
+      const confirmed = window.confirm(`Esta accion eliminara "${title}". ¿Deseas continuar?`);
+      if (!confirmed) return;
+
+      deleteButton.disabled = true;
+      const { error } = await supabase.from(config.table).delete().eq("id", record.id);
+      deleteButton.disabled = false;
+
+      if (error) {
+        setMessage(`No se pudo eliminar ${config.singular}. Revisa permisos RLS.`, "error");
+        return;
+      }
+
+      setMessage(`${config.singular} eliminado correctamente.`, "success");
+      resetContentForm(config);
+      await loadContentRecords(config);
+    }
+  });
+};
+
+const initContentPage = async (config) => {
+  const session = await requireSession();
+  if (!session) return;
+
+  initLogout();
+  initContentForm(config);
+  initContentActions(config);
+  await loadContentRecords(config);
+};
+
 if (page === "login") {
   initLogin();
 } else if (page === "dashboard") {
@@ -353,4 +733,6 @@ if (page === "login") {
   if (session) initLogout();
 } else if (page === "events") {
   await initEventsPage();
+} else if (contentConfigs[page]) {
+  await initContentPage(contentConfigs[page]);
 }

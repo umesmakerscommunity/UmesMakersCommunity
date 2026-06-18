@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestionar proyectos | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body class="admin-body" data-admin-page="projects">
+    <header class="admin-header">
+      <nav class="admin-nav container" aria-label="Navegacion admin">
+        <a class="admin-brand" href="/admin/dashboard.html">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span>Admin UMES Makers</span>
+        </a>
+        <div class="admin-nav-actions">
+          <a href="/admin/dashboard.html">Dashboard</a>
+          <a href="/">Ver sitio</a>
+          <button type="button" data-logout>Cerrar sesion</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-main container">
+      <section class="admin-page-heading">
+        <span class="section-kicker">Proyectos</span>
+        <h1>Gestionar proyectos</h1>
+        <p>Crea, documenta y publica proyectos de la comunidad.</p>
+        <p class="admin-user" data-admin-user></p>
+      </section>
+
+      <section class="admin-events-layout">
+        <form class="admin-form admin-event-form" data-content-form>
+          <div class="admin-form-heading">
+            <h2 data-content-form-title>Nuevo proyecto</h2>
+            <button class="mini-link" type="button" data-content-cancel hidden>Cancelar edicion</button>
+          </div>
+
+          <input type="hidden" name="id" />
+
+          <label>
+            Slug
+            <input type="text" name="slug" required />
+          </label>
+          <label>
+            Nombre
+            <input type="text" name="name" required />
+          </label>
+          <label>
+            Estado
+            <input type="text" name="status" />
+          </label>
+          <label>
+            Texto de actualizacion
+            <input type="text" name="updated_label" />
+          </label>
+          <label class="admin-full">
+            URL de imagen
+            <input type="text" name="image_url" />
+          </label>
+          <label class="admin-full">
+            Resumen
+            <textarea name="summary" rows="4"></textarea>
+          </label>
+          <label class="admin-full">
+            Tecnologias
+            <textarea name="technologies" rows="4" placeholder="Una tecnologia por linea"></textarea>
+          </label>
+          <label class="admin-full">
+            Componentes
+            <textarea name="components" rows="4" placeholder="Un componente por linea"></textarea>
+          </label>
+          <label>
+            URL documentacion
+            <input type="text" name="documentation_url" />
+          </label>
+          <label>
+            URL repositorio
+            <input type="text" name="repository_url" />
+          </label>
+          <label class="admin-full">
+            URL diseños 3D/PCB
+            <input type="text" name="designs_url" />
+          </label>
+          <label class="admin-full">
+            Objetivo
+            <textarea name="objective" rows="4"></textarea>
+          </label>
+          <label class="admin-full">
+            Codigo fuente / fuente
+            <textarea name="source" rows="3"></textarea>
+          </label>
+          <label class="admin-full">
+            Pasos de armado
+            <textarea name="build_steps" rows="5" placeholder="Un paso por linea"></textarea>
+          </label>
+          <label class="admin-full">
+            Resultados
+            <textarea name="results" rows="4" placeholder="Un resultado por linea"></textarea>
+          </label>
+          <label class="admin-full">
+            Mejoras posibles
+            <textarea name="improvements" rows="4" placeholder="Una mejora por linea"></textarea>
+          </label>
+          <label>
+            Orden
+            <input type="number" name="sort_order" value="0" />
+          </label>
+          <label class="admin-checkbox">
+            <input type="checkbox" name="featured" />
+            Proyecto destacado
+          </label>
+          <label class="admin-checkbox admin-full">
+            <input type="checkbox" name="is_published" checked />
+            Publicar proyecto
+          </label>
+
+          <button class="btn btn-primary admin-full" type="submit">Guardar proyecto</button>
+          <p class="admin-message admin-full" data-admin-message hidden></p>
+        </form>
+
+        <section class="admin-list-panel">
+          <div class="admin-list-heading">
+            <h2>Proyectos existentes</h2>
+            <button class="mini-link" type="button" data-content-refresh>Actualizar</button>
+          </div>
+          <div class="admin-loading" data-content-loading hidden>Cargando proyectos...</div>
+          <div class="admin-events-list" data-content-list></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/admin/admin.js"></script>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestionar makers | UMES Makers Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body class="admin-body" data-admin-page="makers">
+    <header class="admin-header">
+      <nav class="admin-nav container" aria-label="Navegacion admin">
+        <a class="admin-brand" href="/admin/dashboard.html">
+          <img src="/logo.png" alt="Logo de UMES Makers Community" />
+          <span>Admin UMES Makers</span>
+        </a>
+        <div class="admin-nav-actions">
+          <a href="/admin/dashboard.html">Dashboard</a>
+          <a href="/">Ver sitio</a>
+          <button type="button" data-logout>Cerrar sesion</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-main container">
+      <section class="admin-page-heading">
+        <span class="section-kicker">Makers</span>
+        <h1>Gestionar makers</h1>
+        <p>Administra perfiles publicos y reconocimientos de la comunidad.</p>
+        <p class="admin-user" data-admin-user></p>
+      </section>
+
+      <section class="admin-events-layout">
+        <form class="admin-form admin-event-form" data-content-form>
+          <div class="admin-form-heading">
+            <h2 data-content-form-title>Nuevo maker</h2>
+            <button class="mini-link" type="button" data-content-cancel hidden>Cancelar edicion</button>
+          </div>
+          <input type="hidden" name="id" />
+          <label>
+            Nombre
+            <input type="text" name="name" required />
+          </label>
+          <label>
+            Iniciales
+            <input type="text" name="initials" />
+          </label>
+          <label class="admin-full">
+            Area
+            <input type="text" name="area" />
+          </label>
+          <label class="admin-full">
+            Bio
+            <textarea name="bio" rows="4"></textarea>
+          </label>
+          <label>
+            GitHub
+            <input type="text" name="github_url" />
+          </label>
+          <label>
+            LinkedIn
+            <input type="text" name="linkedin_url" />
+          </label>
+          <label class="admin-full">
+            Badges
+            <textarea name="badges" rows="4" placeholder="Un badge por linea"></textarea>
+          </label>
+          <label>
+            Orden
+            <input type="number" name="sort_order" value="0" />
+          </label>
+          <label class="admin-checkbox">
+            <input type="checkbox" name="is_published" checked />
+            Publicar maker
+          </label>
+          <button class="btn btn-primary admin-full" type="submit">Guardar maker</button>
+          <p class="admin-message admin-full" data-admin-message hidden></p>
+        </form>
+
+        <section class="admin-list-panel">
+          <div class="admin-list-heading">
+            <h2>Makers existentes</h2>
+            <button class="mini-link" type="button" data-content-refresh>Actualizar</button>
+          </div>
+          <div class="admin-loading" data-content-loading hidden>Cargando makers...</div>
+          <div class="admin-events-list" data-content-list></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/admin/admin.js"></script>
+  </body>
+</html>
