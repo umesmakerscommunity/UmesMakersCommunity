@@ -1,6 +1,6 @@
 import { projects } from "./src/data/projects.js";
 import { events as mockEvents } from "./src/data/events.js";
-import { makers } from "./src/data/makers.js";
+import { makers as mockMakers } from "./src/data/makers.js";
 import { resources as mockResources } from "./src/data/resources.js";
 import { tools as mockTools } from "./src/data/tools.js";
 
@@ -201,6 +201,62 @@ const fetchPublishedToolsFromSupabase = async () => {
   if (error) throw error;
 
   return (data || []).map(mapSupabaseTool);
+};
+
+const normalizeBadges = (badgesValue) => {
+  if (!badgesValue) return [];
+
+  if (typeof badgesValue === "string") {
+    try {
+      return normalizeBadges(JSON.parse(badgesValue));
+    } catch {
+      return badgesValue
+        .split("\n")
+        .map((badge) => badge.trim())
+        .filter(Boolean);
+    }
+  }
+
+  if (Array.isArray(badgesValue)) {
+    return badgesValue.map((badge) => normalizeText(badge)).filter(Boolean);
+  }
+
+  if (typeof badgesValue === "object") {
+    return Object.values(badgesValue).map((badge) => normalizeText(badge)).filter(Boolean);
+  }
+
+  return [];
+};
+
+const mapSupabaseMaker = (maker) => ({
+  name: normalizeText(maker.name, "Maker sin nombre"),
+  initials: normalizeText(maker.initials, "MC"),
+  area: normalizeText(maker.area, "Area por definir"),
+  bio: normalizeText(maker.bio, "Biografia pendiente."),
+  links: {
+    github: normalizeText(maker.github_url, ""),
+    linkedin: normalizeText(maker.linkedin_url, ""),
+  },
+  badges: normalizeBadges(maker.badges),
+});
+
+const fetchPublishedMakersFromSupabase = async () => {
+  const { supabase, isSupabaseConfigured } = await import("./supabaseClient.js");
+
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase no esta configurado.");
+  }
+
+  const { data, error } = await supabase
+    .from("makers")
+    .select("id,created_at,updated_at,name,initials,area,bio,github_url,linkedin_url,badges,sort_order,is_published")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  return (data || []).map(mapSupabaseMaker);
 };
 
 const projectCard = (project) => `
@@ -547,11 +603,23 @@ const initEventCollections = async () => {
   }
 };
 
-const renderMakers = () => {
+const makersMessage = (message, variant = "empty") => `
+  <div class="events-message events-message-${variant} reveal">
+    <p>${message}</p>
+  </div>
+`;
+
+const renderMakers = (makerList = mockMakers) => {
   const container = document.querySelector("[data-makers-grid]");
   if (!container) return;
 
-  container.innerHTML = makers
+  if (!makerList.length) {
+    container.innerHTML = makersMessage("No hay makers publicados por ahora.");
+    initReveal();
+    return;
+  }
+
+  container.innerHTML = makerList
     .map(
       (maker) => `
         <article class="maker-card reveal">
@@ -570,6 +638,28 @@ const renderMakers = () => {
       `
     )
     .join("");
+  initReveal();
+};
+
+const initMakers = async () => {
+  const container = document.querySelector("[data-makers-grid]");
+  if (!container) return;
+
+  container.innerHTML = makersMessage("Cargando makers...", "loading");
+
+  try {
+    const supabaseMakers = await fetchPublishedMakersFromSupabase();
+
+    if (supabaseMakers.length) {
+      renderMakers(supabaseMakers);
+      return;
+    }
+
+    renderMakers(mockMakers);
+  } catch (error) {
+    console.warn("No se pudieron cargar makers desde Supabase:", error);
+    renderMakers(mockMakers);
+  }
 };
 
 const toolsMessage = (message, variant = "empty") => `
@@ -788,7 +878,7 @@ function initReveal() {
 renderProjectCollections();
 renderProjectDetail();
 initEventCollections();
-renderMakers();
+initMakers();
 initTools();
 initResources();
 initNavigation();
